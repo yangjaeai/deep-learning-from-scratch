@@ -194,7 +194,9 @@ class BatchNormalization:
         
         return dx
 
+"""
 
+"""
 class Convolution:
     def __init__(self, W, b, stride=1, pad=0):
         self.W = W
@@ -261,7 +263,7 @@ class Pooling:
         col = im2col(x, self.pool_h, self.pool_w, self.stride, self.pad)
         col = col.reshape(-1, self.pool_h*self.pool_w)
 
-        arg_max = np.argmax(col, axis=1)
+        arg_max = np.argmax(col, axis=1) #최대값
         out = np.max(col, axis=1)
         out = out.reshape(N, out_h, out_w, C).transpose(0, 3, 1, 2)
 
