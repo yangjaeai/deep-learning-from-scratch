@@ -38,17 +38,22 @@ class SimpleConvNet:
         self.params = {}
 
         """ [yjai:20170916] W1 = randomize (30, 1, 5, 5)
+		1번째 층의 합성곱 계층의 가중치를 W1, 편향을 b1에 저장 
         """
         self.params['W1'] = weight_init_std * \
                             np.random.randn(filter_num, input_dim[0], filter_size, filter_size)
         self.params['b1'] = np.zeros(filter_num)
 
-        """ [yjai:20170916] W2 = randomize (4320(=30*12*12), 100) """
+        """ [yjai:20170916] W2 = randomize (4320(=30*12*12), 100) 
+		2번째 층의 완전연결계층(Affine1)의 가중치를 W1, 편햐을 b2에 저장 
+		"""
         self.params['W2'] = weight_init_std * \
                             np.random.randn(pool_output_size, hidden_size)
         self.params['b2'] = np.zeros(hidden_size)
 
-        """ [yjai:20170916] W3 = randomize (100, 10) output size = onehot encoding size = 10 """
+        """ [yjai:20170916] W3 = randomize (100, 10) output size = onehot encoding size = 10 
+		3번째 층의 완전연결 계층의 가중치를 W1, 편향을 b3에 서장 
+		"""
         self.params['W3'] = weight_init_std * \
                             np.random.randn(hidden_size, output_size)
         self.params['b3'] = np.zeros(output_size)
@@ -57,19 +62,23 @@ class SimpleConvNet:
         
         # 계층 생성
         """[2017-10-14 시작]"""
-        self.layers = OrderedDict() #신경망 단계 저장
+        #순서가 있는 딕셔너리, 신경망 계층 저장
+		#conv - relu - pool - affine - relu - affine - softmax
+		self.layers = OrderedDict() 
+		
+		""" 1번째 층 """
         self.layers['Conv1'] = Convolution(self.params['W1'], self.params['b1'],
                                            conv_param['stride'], conv_param['pad'])
         self.layers['Relu1'] = Relu()
         # Pool1 : 공간을 줄이는 연산
         self.layers['Pool1'] = Pooling(pool_h=2, pool_w=2, stride=2)  
         
-        
+        """ 2번째 층 """"
         # Affine1 :
         self.layers['Affine1'] = Affine(self.params['W2'], self.params['b2'])
         self.layers['Relu2'] = Relu()
         
-        
+        """ 3번째 층""""
         self.layers['Affine2'] = Affine(self.params['W3'], self.params['b3'])
         self.last_layer = SoftmaxWithLoss()
 
