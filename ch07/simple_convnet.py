@@ -10,9 +10,9 @@ from common.gradient import numerical_gradient
 
 class SimpleConvNet:
     """단순한 합성곱 신경망
-    
+
     conv - relu - pool - affine - relu - affine - softmax
-    
+
     Parameters
     ----------
     input_size : 입력 크기（MNIST의 경우엔 784）
@@ -23,7 +23,7 @@ class SimpleConvNet:
         'relu'나 'he'로 지정하면 'He 초깃값'으로 설정
         'sigmoid'나 'xavier'로 지정하면 'Xavier 초깃값'으로 설정
     """
-    def __init__(self, input_dim=(1, 28, 28), 
+    def __init__(self, input_dim=(1, 28, 28),
                  conv_param={'filter_num':30, 'filter_size':5, 'pad':0, 'stride':1},
                  hidden_size=100, output_size=10, weight_init_std=0.01):
         filter_num = conv_param['filter_num']
@@ -36,16 +36,24 @@ class SimpleConvNet:
 
         # 가중치 초기화
         self.params = {}
+
+        """ [yjai:20170916] W1 = randomize (30, 1, 5, 5)
+        """
         self.params['W1'] = weight_init_std * \
                             np.random.randn(filter_num, input_dim[0], filter_size, filter_size)
         self.params['b1'] = np.zeros(filter_num)
+
+        """ [yjai:20170916] W2 = randomize (4320(=30*12*12), 100) """
         self.params['W2'] = weight_init_std * \
                             np.random.randn(pool_output_size, hidden_size)
         self.params['b2'] = np.zeros(hidden_size)
+
+        """ [yjai:20170916] W3 = randomize (100, 10) output size = onehot encoding size = 10 """
         self.params['W3'] = weight_init_std * \
                             np.random.randn(hidden_size, output_size)
         self.params['b3'] = np.zeros(output_size)
 
+        """ [yjai:20170916] 진도 끝 """
         # 계층 생성
         self.layers = OrderedDict()
         self.layers['Conv1'] = Convolution(self.params['W1'], self.params['b1'],
@@ -77,16 +85,16 @@ class SimpleConvNet:
 
     def accuracy(self, x, t, batch_size=100):
         if t.ndim != 1 : t = np.argmax(t, axis=1)
-        
+
         acc = 0.0
-        
+
         for i in range(int(x.shape[0] / batch_size)):
             tx = x[i*batch_size:(i+1)*batch_size]
             tt = t[i*batch_size:(i+1)*batch_size]
             y = self.predict(tx)
             y = np.argmax(y, axis=1)
-            acc += np.sum(y == tt) 
-        
+            acc += np.sum(y == tt)
+
         return acc / x.shape[0]
 
     def numerical_gradient(self, x, t):
@@ -145,7 +153,7 @@ class SimpleConvNet:
         grads['W3'], grads['b3'] = self.layers['Affine2'].dW, self.layers['Affine2'].db
 
         return grads
-        
+
     def save_params(self, file_name="params.pkl"):
         params = {}
         for key, val in self.params.items():
