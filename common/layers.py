@@ -76,6 +76,7 @@ class Affine:
         return out
 
     def backward(self, dout):
+	    print("Affine", dout)
         dx = np.dot(dout, self.W.T)
         self.dW = np.dot(self.x.T, dout)
         self.db = np.sum(dout, axis=0)
@@ -110,6 +111,8 @@ class SoftmaxWithLoss:
             dx[np.arange(batch_size), self.t] -= 1
             dx = dx / batch_size
         
+		    
+		print("SoftmaxWithLoss", dx)
         return dx
 
 

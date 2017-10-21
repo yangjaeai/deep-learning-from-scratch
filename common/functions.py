@@ -53,6 +53,8 @@ def cross_entropy_error(y, t):
         t = t.argmax(axis=1)
              
     batch_size = y.shape[0]
+	
+	#[2017-10-21] 지수가 음수이므로 결과값에 (-) 연산  
     return -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size
 
 
